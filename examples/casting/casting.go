@@ -17,8 +17,6 @@
 package casting
 
 import (
-	"unsafe"
-
 	"github.com/awnumar/memguard"
 )
 
@@ -32,68 +30,56 @@ type Secure struct {
 
 // ByteArray10 allocates and returns a region of memory represented as a fixed-size 10 byte array.
 func ByteArray10() (*memguard.LockedBuffer, *[10]byte) {
+	_ = "STUB: not implemented"
 	// Allocate 10 bytes of memory
-	b := memguard.NewBuffer(10)
-
-	// Return the LockedBuffer along with the cast pointer
-	return b, (*[10]byte)(unsafe.Pointer(&b.Bytes()[0]))
+	return nil, nil
 }
+
+// Return the LockedBuffer along with the cast pointer
 
 // Uint64Array4 allocates a 32 byte memory region and returns it represented as a sequence of four unsigned 64 bit integer values.
 func Uint64Array4() (*memguard.LockedBuffer, *[4]uint64) {
+	_ = "STUB: not implemented"
 	// Allocate the correct amount of memory
-	b := memguard.NewBuffer(32)
-
-	// Return the LockedBuffer along with the cast pointer
-	return b, (*[4]uint64)(unsafe.Pointer(&b.Bytes()[0]))
+	return nil, nil
 }
+
+// Return the LockedBuffer along with the cast pointer
 
 // SecureStruct allocates a region of memory the size of a struct type and returns a pointer to that memory represented as that struct type.
 func SecureStruct() (*memguard.LockedBuffer, *Secure) {
+	_ = "STUB: not implemented"
 	// Initialise an instance of the struct type
-	s := new(Secure)
-
-	// Allocate a LockedBuffer of the correct size
-	b := memguard.NewBuffer(int(unsafe.Sizeof(*s)))
-
-	// Return the LockedBuffer along with the initialised struct
-	return b, (*Secure)(unsafe.Pointer(&b.Bytes()[0]))
+	return nil, nil
 }
+
+// Allocate a LockedBuffer of the correct size
+
+// Return the LockedBuffer along with the initialised struct
 
 // SecureStructArray allocates enough memory to hold an array of Secure structs and returns them.
 func SecureStructArray() (*memguard.LockedBuffer, *[2]Secure) {
+	_ = "STUB: not implemented"
 	// Initialise an instance of the struct type
-	s := new(Secure)
-
-	// Allocate a LockedBuffer of four times the size of the struct type
-	b := memguard.NewBuffer(int(unsafe.Sizeof(*s)) * 2)
-
-	// Cast a pointer to the start of the memory into a pointer of a fixed size array of Secure structs of length four
-	secureArray := (*[2]Secure)(unsafe.Pointer(&b.Bytes()[0]))
-
-	// Return the LockedBuffer along with the array
-	return b, secureArray
+	return nil, nil
 }
+
+// Allocate a LockedBuffer of four times the size of the struct type
+
+// Cast a pointer to the start of the memory into a pointer of a fixed size array of Secure structs of length four
+
+// Return the LockedBuffer along with the array
 
 // SecureStructSlice takes a length and returns a slice of Secure struct values of that length.
 func SecureStructSlice(size int) (*memguard.LockedBuffer, []Secure) {
-	if size < 1 {
-		return nil, nil
-	}
-
-	// Initialise an instance of the struct type
-	s := new(Secure)
-
-	// Allocate the enough memory to store the struct values
-	b := memguard.NewBuffer(int(unsafe.Sizeof(*s)) * size)
-
-	// Construct the slice from its parameters
-	var sl = struct {
-		addr uintptr
-		len  int
-		cap  int
-	}{uintptr(unsafe.Pointer(&b.Bytes()[0])), size, size}
-
-	// Return the LockedBuffer along with the constructed slice
-	return b, *(*[]Secure)(unsafe.Pointer(&sl))
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Initialise an instance of the struct type
+
+// Allocate the enough memory to store the struct values
+
+// Construct the slice from its parameters
+
+// Return the LockedBuffer along with the constructed slice

@@ -2,10 +2,7 @@ package memguard
 
 import (
 	"os"
-	"os/signal"
 	"sync"
-
-	"github.com/awnumar/memguard/core"
 )
 
 var (
@@ -30,34 +27,19 @@ CatchSignal assigns a given function to be run in the event of a signal being re
 This function can be called multiple times with the effect that only the last call will have any effect.
 */
 func CatchSignal(f func(os.Signal), signals ...os.Signal) {
-	create.Do(func() {
-		// Start a goroutine to listen on the channels.
-		go func() {
-			var handler func(os.Signal)
-			for {
-				select {
-				case signal := <-listener:
-					handler(signal)
-					core.Exit(1)
-				case handler = <-sigfunc:
-				}
-			}
-		}()
-	})
+	_ = "STUB: not implemented"
 
-	// Update the handler function.
-	sigfunc <- f
-
-	// Notify the channel if we receive a signal.
-	signal.Reset()
-	signal.Notify(listener, signals...)
+	// Start a goroutine to listen on the channels.
+	return
 }
+
+// Update the handler function.
+
+// Notify the channel if we receive a signal.
 
 /*
 CatchInterrupt is a wrapper around CatchSignal that makes it easy to safely handle receiving interrupt signals. If an interrupt is received, the process will wipe sensitive data in memory before terminating.
 
 A subsequent call to CatchSignal will override this call.
 */
-func CatchInterrupt() {
-	CatchSignal(func(_ os.Signal) {}, os.Interrupt)
-}
+func CatchInterrupt() { _ = "STUB: not implemented"; return }

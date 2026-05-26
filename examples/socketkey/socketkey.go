@@ -16,15 +16,6 @@
 
 package socketkey
 
-import (
-	"bytes"
-	"fmt"
-	"net"
-	"os"
-
-	"github.com/awnumar/memguard"
-)
-
 // Save the data here so we can compare it later. Obviously this leaks the secret.
 var data []byte
 
@@ -34,90 +25,43 @@ var data []byte
 SocketKey is a streaming multi-threaded client->server transfer of secure data over a socket.
 */
 func SocketKey(size int) {
+	_ = "STUB: not implemented"
 	// Create a server to listen on.
-	listener, err := net.Listen("tcp", "127.0.0.1:4128")
-	if err != nil {
-		memguard.SafePanic(err)
-	}
-	defer listener.Close()
-
-	// Catch signals and close the listener before terminating safely.
-	memguard.CatchSignal(func(s os.Signal) {
-		fmt.Println("Received signal:", s.String())
-		listener.Close()
-	}, os.Interrupt, os.Kill)
-
-	// Purge the session before returning.
-	defer memguard.Purge()
-
-	// Create a client to connect to our server.
-	go func() {
-		// Connect to our server
-		addr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:4128")
-		if err != nil {
-			memguard.SafePanic(err)
-		}
-		conn, err := net.DialTCP("tcp", nil, addr)
-		if err != nil {
-			memguard.SafePanic(err)
-		}
-		defer conn.Close()
-
-		// Create a buffer filled with random bytes
-		buf := memguard.NewBufferRandom(size)
-		defer buf.Destroy()
-
-		// Save a copy of the key for comparison later.
-		data = make([]byte, buf.Size())
-		copy(data, buf.Bytes())
-
-		// fmt.Printf("Sending key: %#v\n", buf.Bytes())
-
-		// Send the data to the server
-		var total, written int
-		for total = 0; total < size; total += written {
-			written, err = conn.Write(buf.Bytes()[total:])
-			if err != nil {
-				memguard.SafePanic(err)
-			}
-		}
-	}()
-
-	// Accept connections from clients
-	conn, err := listener.Accept()
-	if err != nil {
-		memguard.SafePanic(err)
-	}
-
-	// Read the data directly into a guarded memory region
-	buf, err := memguard.NewBufferFromReader(conn, size)
-	if err != nil {
-		memguard.SafePanic(err)
-	}
-	defer buf.Destroy()
-	conn.Close()
-
-	// fmt.Printf("Received key: %#v\n", buf.Bytes())
-
-	// Compare the key to make sure it wasn't corrupted.
-	if !bytes.Equal(data, buf.Bytes()) {
-		memguard.SafePanic(fmt.Sprint("sent != received ::", data, buf.Bytes()))
-	}
-
-	// Seal the key into an encrypted Enclave object.
-	key := buf.Seal()
-	// <-- buf is destroyed by this point
-
-	// fmt.Printf("Encrypted key: %#v\n", key)
-
-	// Decrypt the key into a new buffer.
-	buf, err = key.Open()
-	if err != nil {
-		memguard.SafePanic(err)
-	}
-
-	// fmt.Printf("Decrypted key: %#v\n", buf.Bytes())
-
-	// Destroy the buffer.
-	buf.Destroy()
+	return
 }
+
+// Catch signals and close the listener before terminating safely.
+
+// Purge the session before returning.
+
+// Create a client to connect to our server.
+
+// Connect to our server
+
+// Create a buffer filled with random bytes
+
+// Save a copy of the key for comparison later.
+
+// fmt.Printf("Sending key: %#v\n", buf.Bytes())
+
+// Send the data to the server
+
+// Accept connections from clients
+
+// Read the data directly into a guarded memory region
+
+// fmt.Printf("Received key: %#v\n", buf.Bytes())
+
+// Compare the key to make sure it wasn't corrupted.
+
+// Seal the key into an encrypted Enclave object.
+
+// <-- buf is destroyed by this point
+
+// fmt.Printf("Encrypted key: %#v\n", key)
+
+// Decrypt the key into a new buffer.
+
+// fmt.Printf("Decrypted key: %#v\n", buf.Bytes())
+
+// Destroy the buffer.

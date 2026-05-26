@@ -2,11 +2,7 @@ package core
 
 import (
 	"errors"
-	"slices"
 	"sync"
-	"unsafe"
-
-	"github.com/awnumar/memcall"
 )
 
 var (
@@ -43,222 +39,94 @@ type Buffer struct {
 /*
 NewBuffer is a raw constructor for the Buffer object.
 */
-func NewBuffer(size int) (*Buffer, error) {
-	var err error
+func NewBuffer(size int) (*Buffer, error) { _ = "STUB: not implemented"; return nil, nil }
 
-	if size < 1 {
-		return nil, ErrNullBuffer
-	}
+// Allocate the total needed memory
 
-	b := new(Buffer)
+// Construct slice reference for data buffer.
 
-	// Allocate the total needed memory
-	innerLen := roundToPageSize(size)
-	b.memory, err = memcall.Alloc((2 * pageSize) + innerLen)
-	if err != nil {
-		Panic(err)
-	}
+// Construct slice references for page sectors.
 
-	// Construct slice reference for data buffer.
-	b.data = unsafe.Slice(&b.memory[pageSize+innerLen-size], size)
+// Construct slice reference for canary portion of inner page.
 
-	// Construct slice references for page sectors.
-	b.preguard = unsafe.Slice(&b.memory[0], pageSize)
-	b.inner = unsafe.Slice(&b.memory[pageSize], innerLen)
-	b.postguard = unsafe.Slice(&b.memory[pageSize+innerLen], pageSize)
+// Lock the pages that will hold sensitive data.
 
-	// Construct slice reference for canary portion of inner page.
-	b.canary = unsafe.Slice(&b.memory[pageSize], len(b.inner)-len(b.data))
+// Initialise the canary value and reference regions.
 
-	// Lock the pages that will hold sensitive data.
-	if err := memcall.Lock(b.inner); err != nil {
-		Panic(err)
-	}
+// Make the guard pages inaccessible.
 
-	// Initialise the canary value and reference regions.
-	if err := Scramble(b.canary); err != nil {
-		Panic(err)
-	}
-	Copy(b.preguard, b.canary)
-	Copy(b.postguard, b.canary)
+// Set remaining properties
 
-	// Make the guard pages inaccessible.
-	if err := memcall.Protect(b.preguard, memcall.NoAccess()); err != nil {
-		Panic(err)
-	}
-	if err := memcall.Protect(b.postguard, memcall.NoAccess()); err != nil {
-		Panic(err)
-	}
+// Append the container to list of active buffers.
 
-	// Set remaining properties
-	b.alive = true
-	b.mutable = true
-
-	// Append the container to list of active buffers.
-	buffers.add(b)
-
-	// Return the created Buffer to the caller.
-	return b, nil
-}
+// Return the created Buffer to the caller.
 
 // Data returns a byte slice representing the memory region containing the data.
 func (b *Buffer) Data() []byte {
-	return b.data
-}
+	_ = "STUB: not implemented"
 
-// Inner returns a byte slice representing the entire inner memory pages. This should NOT be used unless you have a specific need.
-func (b *Buffer) Inner() []byte {
-	return b.inner
-}
-
-// Freeze makes the underlying memory of a given buffer immutable. This will do nothing if the Buffer has been destroyed.
-func (b *Buffer) Freeze() {
-	if err := b.freeze(); err != nil {
-		Panic(err)
-	}
-}
-
-func (b *Buffer) freeze() error {
-	b.Lock()
-	defer b.Unlock()
-
-	if !b.alive {
-		return nil
-	}
-
-	if b.mutable {
-		if err := memcall.Protect(b.inner, memcall.ReadOnly()); err != nil {
-			return err
-		}
-		b.mutable = false
-	}
-
+	// Inner returns a byte slice representing the entire inner memory pages. This should NOT be used unless you have a specific need.
 	return nil
 }
+
+func (b *Buffer) Inner() []byte {
+	_ = "STUB: not implemented"
+
+	// Freeze makes the underlying memory of a given buffer immutable. This will do nothing if the Buffer has been destroyed.
+	return nil
+}
+
+func (b *Buffer) Freeze() { _ = "STUB: not implemented"; return }
+
+func (b *Buffer) freeze() error { _ = "STUB: not implemented"; return nil }
 
 // Melt makes the underlying memory of a given buffer mutable. This will do nothing if the Buffer has been destroyed.
-func (b *Buffer) Melt() {
-	if err := b.melt(); err != nil {
-		Panic(err)
-	}
-}
+func (b *Buffer) Melt() { _ = "STUB: not implemented"; return }
 
-func (b *Buffer) melt() error {
-	b.Lock()
-	defer b.Unlock()
-
-	if !b.alive {
-		return nil
-	}
-
-	if !b.mutable {
-		if err := memcall.Protect(b.inner, memcall.ReadWrite()); err != nil {
-			return err
-		}
-		b.mutable = true
-	}
-	return nil
-}
+func (b *Buffer) melt() error { _ = "STUB: not implemented"; return nil }
 
 // Scramble attempts to overwrite the data with cryptographically-secure random bytes.
-func (b *Buffer) Scramble() {
-	if err := b.scramble(); err != nil {
-		Panic(err)
-	}
-}
+func (b *Buffer) Scramble() { _ = "STUB: not implemented"; return }
 
-func (b *Buffer) scramble() error {
-	b.Lock()
-	defer b.Unlock()
-	return Scramble(b.Data())
-}
+func (b *Buffer) scramble() error { _ = "STUB: not implemented"; return nil }
 
 /*
 Destroy performs some security checks, securely wipes the contents of, and then releases a Buffer's memory back to the OS. If a security check fails, the process will attempt to wipe all it can before safely panicking.
 
 If the Buffer has already been destroyed, the function does nothing and returns nil.
 */
-func (b *Buffer) Destroy() {
-	if err := b.destroy(); err != nil {
-		Panic(err)
-	}
-	// Remove this one from global slice.
-	buffers.remove(b)
-}
+func (b *Buffer) Destroy() { _ = "STUB: not implemented"; return }
 
-func (b *Buffer) destroy() error {
-	if b == nil {
-		return nil
-	}
+// Remove this one from global slice.
 
-	// Attain a mutex lock on this Buffer.
-	b.Lock()
-	defer b.Unlock()
+func (b *Buffer) destroy() error { _ = "STUB: not implemented"; return nil }
 
-	// Return if it's already destroyed.
-	if !b.alive {
-		return nil
-	}
+// Attain a mutex lock on this Buffer.
 
-	// Make all of the memory readable and writable.
-	if err := memcall.Protect(b.memory, memcall.ReadWrite()); err != nil {
-		return err
-	}
-	b.mutable = true
+// Return if it's already destroyed.
 
-	// Wipe data field.
-	Wipe(b.data)
+// Make all of the memory readable and writable.
 
-	// Verify the canary
-	if !Equal(b.preguard, b.postguard) || !Equal(b.preguard[:len(b.canary)], b.canary) {
-		return errors.New("<memguard::core::buffer> canary verification failed; buffer overflow detected")
-	}
+// Wipe data field.
 
-	// Wipe the memory.
-	Wipe(b.memory)
+// Verify the canary
 
-	// Unlock pages locked into memory.
-	if err := memcall.Unlock(b.inner); err != nil {
-		return err
-	}
+// Wipe the memory.
 
-	// Free all related memory.
-	if err := memcall.Free(b.memory); err != nil {
-		return err
-	}
+// Unlock pages locked into memory.
 
-	// Reset the fields.
-	b.alive = false
-	b.mutable = false
-	b.data = nil
-	b.memory = nil
-	b.preguard = nil
-	b.inner = nil
-	b.postguard = nil
-	b.canary = nil
-	return nil
-}
+// Free all related memory.
+
+// Reset the fields.
 
 // Alive returns true if the buffer has not been destroyed.
-func (b *Buffer) Alive() bool {
-	b.RLock()
-	defer b.RUnlock()
-	return b.alive
-}
+func (b *Buffer) Alive() bool { _ = "STUB: not implemented"; return false }
 
 // Mutable returns true if the buffer is mutable.
-func (b *Buffer) Mutable() bool {
-	b.RLock()
-	defer b.RUnlock()
-	return b.mutable
-}
+func (b *Buffer) Mutable() bool { _ = "STUB: not implemented"; return false }
 
 // isDestroyed returns true if the buffer is destroyed
-func (b *Buffer) isDestroyed() bool {
-	b.RLock()
-	defer b.RUnlock()
-	return b.data == nil
-}
+func (b *Buffer) isDestroyed() bool { _ = "STUB: not implemented"; return false }
 
 // BufferList stores a list of buffers in a thread-safe manner.
 type bufferList struct {
@@ -267,54 +135,16 @@ type bufferList struct {
 }
 
 // Add appends a given Buffer to the list.
-func (l *bufferList) add(b ...*Buffer) {
-	l.Lock()
-	defer l.Unlock()
-
-	l.list = append(l.list, b...)
-}
+func (l *bufferList) add(b ...*Buffer) { _ = "STUB: not implemented"; return }
 
 // Copy returns an instantaneous snapshot of the list.
-func (l *bufferList) copy() []*Buffer {
-	l.Lock()
-	defer l.Unlock()
-
-	list := make([]*Buffer, len(l.list))
-	copy(list, l.list)
-
-	return list
-}
+func (l *bufferList) copy() []*Buffer { _ = "STUB: not implemented"; return nil }
 
 // Remove removes a given Buffer from the list.
-func (l *bufferList) remove(b *Buffer) {
-	l.Lock()
-	defer l.Unlock()
-
-	for i, v := range l.list {
-		if v == b {
-			l.list = append(l.list[:i], l.list[i+1:]...)
-			break
-		}
-	}
-}
+func (l *bufferList) remove(b *Buffer) { _ = "STUB: not implemented"; return }
 
 // Exists checks if a given buffer is in the list.
-func (l *bufferList) exists(b *Buffer) bool {
-	l.RLock()
-	defer l.RUnlock()
-
-	return slices.Contains(l.list, b)
-}
+func (l *bufferList) exists(b *Buffer) bool { _ = "STUB: not implemented"; return false }
 
 // Flush clears the list and returns its previous contents.
-func (l *bufferList) flush() []*Buffer {
-	l.Lock()
-	defer l.Unlock()
-
-	list := make([]*Buffer, len(l.list))
-	copy(list, l.list)
-
-	l.list = nil
-
-	return list
-}
+func (l *bufferList) flush() []*Buffer { _ = "STUB: not implemented"; return nil }

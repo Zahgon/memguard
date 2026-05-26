@@ -2,5 +2,7 @@ package streams
 
 // MakeStreams ...
 func MakeStreams() {
-	//concurrent stream access over multiple streams test
+	_ = "STUB: not implemented"
+	// concurrent stream access over multiple streams test
+	return
 }

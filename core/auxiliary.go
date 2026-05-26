@@ -10,6 +10,4 @@ var (
 )
 
 // Round a length to a multiple of the system page size.
-func roundToPageSize(length int) int {
-	return (length + (pageSize - 1)) & (^(pageSize - 1))
-}
+func roundToPageSize(length int) int { _ = "STUB: not implemented"; return 0 }

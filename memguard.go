@@ -1,44 +1,37 @@
 package memguard
 
-import (
-	"github.com/awnumar/memguard/core"
-)
-
 /* Enhancement: check for low memory locking limit and print warning?*/
 
 /*
 ScrambleBytes overwrites an arbitrary buffer with cryptographically-secure random bytes.
 */
-func ScrambleBytes(buf []byte) {
-	if err := core.Scramble(buf); err != nil {
-		core.Panic(err)
-	}
-}
+func ScrambleBytes(buf []byte) { _ = "STUB: not implemented"; return }
 
 /*
 WipeBytes overwrites an arbitrary buffer with zeroes.
 */
 func WipeBytes(buf []byte) {
-	core.Wipe(buf)
+	_ = "STUB: not implemented"
+
+	/*
+	   Purge resets the session key to a fresh value and destroys all existing LockedBuffers. Existing Enclave objects will no longer be decryptable.
+	*/return
 }
 
-/*
-Purge resets the session key to a fresh value and destroys all existing LockedBuffers. Existing Enclave objects will no longer be decryptable.
-*/
 func Purge() {
-	core.Purge()
+	_ = "STUB: not implemented"
+
+	/*
+	   SafePanic wipes all it can before calling panic(v).
+	*/return
 }
 
-/*
-SafePanic wipes all it can before calling panic(v).
-*/
 func SafePanic(v any) {
-	core.Panic(v)
+	_ = "STUB: not implemented"
+
+	/*
+	   SafeExit destroys everything sensitive before exiting with a specified status code.
+	*/return
 }
 
-/*
-SafeExit destroys everything sensitive before exiting with a specified status code.
-*/
-func SafeExit(c int) {
-	core.Exit(c)
-}
+func SafeExit(c int) { _ = "STUB: not implemented"; return }

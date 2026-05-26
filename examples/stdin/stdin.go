@@ -17,21 +17,10 @@
 package stdin
 
 import (
-	"errors"
-	"os"
-
 	"github.com/awnumar/memguard"
 )
 
 // ReadKeyFromStdin reads a key from standard inputs and returns it sealed inside an Enclave object.
-func ReadKeyFromStdin() (*memguard.Enclave, error) {
-	key, err := memguard.NewBufferFromReaderUntil(os.Stdin, '\n')
-	if err != nil {
-		// error encountered before '\n' was reached
-		return nil, err
-	}
-	if key.Size() == 0 {
-		return nil, errors.New("no input received")
-	}
-	return key.Seal(), nil
-}
+func ReadKeyFromStdin() (*memguard.Enclave, error) { _ = "STUB: not implemented"; return nil, nil }
+
+// error encountered before '\n' was reached

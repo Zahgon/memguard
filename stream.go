@@ -2,11 +2,8 @@ package memguard
 
 import (
 	"container/list"
-	"io"
 	"os"
 	"sync"
-
-	"github.com/awnumar/memguard/core"
 )
 
 var (
@@ -23,24 +20,30 @@ type queue struct {
 
 // add data to back of queue
 func (q *queue) join(e *Enclave) {
-	q.PushBack(e)
+	_ = "STUB: not implemented"
+
+	// add data to front of queue
+	return
 }
 
-// add data to front of queue
 func (q *queue) push(e *Enclave) {
-	q.PushFront(e)
+	_ = "STUB: not implemented"
+
+	// pop data off front of queue
+	// returns nil if queue is empty
+	return
 }
 
-// pop data off front of queue
-// returns nil if queue is empty
 func (q *queue) pop() *Enclave {
-	e := q.Front() // get element at front of queue
-	if e == nil {
-		return nil // no data
-	}
-	q.Remove(e)               // success => remove value
-	return e.Value.(*Enclave) // unwrap and return (potential panic)
+	_ = "STUB: not implemented"
+	// get element at front of queue
+	return nil
 }
+
+// no data
+
+// success => remove value
+// unwrap and return (potential panic)
 
 /*
 Stream is an in-memory encrypted container implementing the reader and writer interfaces.
@@ -53,28 +56,14 @@ type Stream struct {
 }
 
 // NewStream initialises a new empty Stream object.
-func NewStream() *Stream {
-	return &Stream{queue: &queue{List: list.New()}}
-}
+func NewStream() *Stream { _ = "STUB: not implemented"; return nil }
 
 /*
 Write encrypts and writes some given data to a Stream object.
 
 The data is broken down into chunks and added to the stream in order. The last thing to be written to the stream is the last thing that will be read back.
 */
-func (s *Stream) Write(data []byte) (int, error) {
-	s.Lock()
-	defer s.Unlock()
-
-	for i := 0; i < len(data); i += c {
-		if i+c > len(data) {
-			s.join(NewEnclave(data[len(data)-(len(data)%c):]))
-		} else {
-			s.join(NewEnclave(data[i : i+c]))
-		}
-	}
-	return len(data), nil
-}
+func (s *Stream) Write(data []byte) (int, error) { _ = "STUB: not implemented"; return 0, nil }
 
 /*
 Read decrypts and places some data from a Stream object into a provided buffer.
@@ -86,70 +75,36 @@ added to the front of the queue to be returned in the next call.
 To be performant, have
 */
 func (s *Stream) Read(buf []byte) (int, error) {
-	s.Lock()
-	defer s.Unlock()
+	_ = "STUB: not implemented"
+	return 0,
 
-	// Grab the next chunk of data from the stream.
-	b, err := s.next()
-	if err != nil {
-		return 0, err
-	}
-	defer b.Destroy()
-
-	// Copy the contents into the given buffer.
-	core.Copy(buf, b.Bytes())
-
-	// Check if there is data left over.
-	if len(buf) < b.Size() {
-		// Re-encrypt it and push onto the front of the list.
-		c := NewBuffer(b.Size() - len(buf))
-		c.Copy(b.Bytes()[len(buf):])
-		s.push(c.Seal())
-		return len(buf), nil
-	}
-
-	// Not enough data or perfect amount of data.
-	// Either way we copied the entire buffer.
-	return b.Size(), nil
+		// Grab the next chunk of data from the stream.
+		nil
 }
+
+// Copy the contents into the given buffer.
+
+// Check if there is data left over.
+
+// Re-encrypt it and push onto the front of the list.
+
+// Not enough data or perfect amount of data.
+// Either way we copied the entire buffer.
 
 // Size returns the number of bytes of data currently stored within a Stream object.
-func (s *Stream) Size() int {
-	s.Lock()
-	defer s.Unlock()
-
-	var n int
-	for e := s.Front(); e != nil; e = e.Next() {
-		n += e.Value.(*Enclave).Size()
-	}
-	return n
-}
+func (s *Stream) Size() int { _ = "STUB: not implemented"; return 0 }
 
 // Next grabs the next chunk of data from the Stream and returns it decrypted inside a LockedBuffer. Any error from the stream is forwarded.
-func (s *Stream) Next() (*LockedBuffer, error) {
-	s.Lock()
-	defer s.Unlock()
-
-	return s.next()
-}
+func (s *Stream) Next() (*LockedBuffer, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // does not acquire mutex lock
 func (s *Stream) next() (*LockedBuffer, error) {
+	_ = "STUB: not implemented"
 	// Pop data from the front of the list.
-	e := s.pop()
-	if e == nil {
-		return newNullBuffer(), io.EOF
-	}
-
-	// Decrypt the data into a guarded allocation.
-	b, err := e.Open()
-	if err != nil {
-		return newNullBuffer(), err
-	}
-	return b, nil
+	return nil, nil
 }
+
+// Decrypt the data into a guarded allocation.
 
 // Flush reads all of the data from a Stream and returns it inside a LockedBuffer. If an error is encountered before all the data could be read, it is returned along with any data read up until that point.
-func (s *Stream) Flush() (*LockedBuffer, error) {
-	return NewBufferFromEntireReader(s)
-}
+func (s *Stream) Flush() (*LockedBuffer, error) { _ = "STUB: not implemented"; return nil, nil }
